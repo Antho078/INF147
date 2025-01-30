@@ -1,7 +1,0 @@
-﻿  INF147-TP1_p2.c
-C:\H25INF147\INF147-TP1_p2\INF147-TP1_p2.c(228,12): warning C4013: 'toupper' non défini(e) ; extern retournant int pris par défaut
-C:\H25INF147\INF147-TP1_p2\INF147-TP1_p2.c(245,20): warning C4018: '<' : incompatibilité signed/unsigned
-C:\H25INF147\INF147-TP1_p2\INF147-TP1_p2.c(256,20): warning C4018: '<' : incompatibilité signed/unsigned
-C:\H25INF147\INF147-TP1_p2\INF147-TP1_p2.c(271,20): warning C4018: '<' : incompatibilité signed/unsigned
-C:\H25INF147\INF147-TP1_p2\INF147-TP1_p2.c(280,20): warning C4018: '<' : incompatibilité signed/unsigned
-  INF147-TP1_p2.vcxproj -> C:\H25INF147\INF147-TP1_p2\x64\Debug\INF147-TP1_p2.exe
