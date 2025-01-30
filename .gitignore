@@ -1,4 +1,11 @@
-.vs/
-.vcxproj
-.vcxproj.filters
-.vcxproj.user
+# Ignore everything by default
+*
+
+# Allow specific Visual Studio project files
+!.gitignore
+!*.vcxproj
+!*.vcxproj.filters
+!*.vcxproj.user
+
+# Ignore the `.vs` folder except for necessary files (if required)
+.vs/*
