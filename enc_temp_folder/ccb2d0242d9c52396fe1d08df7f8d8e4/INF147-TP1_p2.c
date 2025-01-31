@@ -180,20 +180,8 @@ Retour :
 */
 /*===========================================================================*/
 int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]);
-
-
 /*===========================================================================*/
-/*
-fonction :		gerer_monnaie()
-Description :
 
-
-Paramètres :
-Retour :
-*/
-/*===========================================================================*/
-int gerer_monnaie(int item, double prix, int tab_monnaie);
-/*===========================================================================*/
 
 /*===========================================================================*/
 /*Implémentation des fonctions privées*/
@@ -362,7 +350,6 @@ int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]) {
 	if (montant > 0) {
 		for (int i = 0; i <= NB_PIECES; i++) {
 			tab_monnaie[i] += tab_nb_pieces[i];
-			tab_nb_pieces = { 0 };
 		}
 		
 		return 0; //Pas assez de monaie dans la machine
@@ -375,27 +362,11 @@ int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]) {
 	}
 }
 
-int gerer_monnaie(int item, double prix, int tab_monnaie) {
-	double montant_recu = recolter_argent(prix);
-	double retour = 0;
-	if (montant_recu < prix) {
-		printf("Total: %0.2f$ / %0.2f$\r\n", montant_recu, prix);
-		printf("Commande annulée\r\n");
-		retour = montant_recu;
-	}
-	else if (montant_recu >= prix) {
-		retour = montant_recu - prix;
-	}
-	printf("Re-voici votre argent :\r\n");
-	//LOOPP POUR TOUT AFFICHER
-	printf("%d x %")
-}
-
 #if RUN_MODE
 
 void main(void) {
 
-	recolter_argent(3);
+	//recolter_argent(3);
 	redonner_monnaie(3.75, &tab_monnaie);
 }
 #endif
