@@ -159,11 +159,21 @@ void afficher_inventaire(int tab_inventaire[], unsigned int nb_items);
 /*===========================================================================*/
 /*
 fonction :		recolter_argent()
-Description :	
+Description :	Fonction permettant de récolter l’argent nécessaire selon le 
+				prix d'item reçu. La fonction boucle en faisant la saisie de 
+				codes-capteurs pour voir si une nouvelle pièce ou billet a été 
+				insérée. Selon la pièce de monnaie (ou un billet de 5$) reçue, 
+				on ajoute le montant à un total accumulé, jusqu'à ce que ce 
+				total soit égal ou supérieur au prix reçu.  Si l'utilisateur 
+				sélectionne "1. Choisir un item", le système annule la commande 
+				en cours et on quitte la boucle de saisie.  On retourne le total
+				accumulé.
 
+Paramètres :	prix:  Prix de l'item (réel). Un des 5 prix valides (voir les constantes)
+				tab_monnaie: Tableau d’entiers indiquant le nombre de pièces de monnaie disponibles.
 
-Paramètres :	
-Retour :		
+Retour :		le montant total reçu (réel), si la commande est annulée ce montant sera < prix.
+
 */
 /*===========================================================================*/
 double recolter_argent(double prix_item);
@@ -362,7 +372,7 @@ int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]) {
 	if (montant > 0) {
 		for (int i = 0; i <= NB_PIECES; i++) {
 			tab_monnaie[i] += tab_nb_pieces[i];
-			tab_nb_pieces = { 0 };
+			tab_nb_pieces[i] = 0;
 		}
 		
 		return 0; //Pas assez de monaie dans la machine
@@ -382,13 +392,17 @@ int gerer_monnaie(int item, double prix, int tab_monnaie) {
 		printf("Total: %0.2f$ / %0.2f$\r\n", montant_recu, prix);
 		printf("Commande annulée\r\n");
 		retour = montant_recu;
+		printf("Re-voici votre argent :\r\n");
+		redonner_monnaie(retour, &tab_monnaie);
+		return 0;
 	}
 	else if (montant_recu >= prix) {
 		retour = montant_recu - prix;
+		printf("Re-voici votre argent :\r\n");
+		redonner_monnaie(retour, &tab_monnaie);
+		return 1;
 	}
-	printf("Re-voici votre argent :\r\n");
-	//LOOPP POUR TOUT AFFICHER
-	printf("%d x %")
+	
 }
 
 #if RUN_MODE
@@ -396,7 +410,7 @@ int gerer_monnaie(int item, double prix, int tab_monnaie) {
 void main(void) {
 
 	recolter_argent(3);
-	redonner_monnaie(3.75, &tab_monnaie);
+	gerer_monnaie(5, 3, &tab_monnaie);
 }
 #endif
 
