@@ -54,9 +54,9 @@ const double VAL_PIECES[NB_PIECES] = { 0.25, 1.00, 2.00 };
 #define BILLET_5D   5.00   //billets de 5 dollars
 
 // Les quantités de pièces de monnaie en inventaire (réduire ces valeurs pour vos tests)
-#define NB_PIECES_25C    1
-#define NB_PIECES_1D     1
-#define NB_PIECES_2D     1
+#define NB_PIECES_25C    5
+#define NB_PIECES_1D     5
+#define NB_PIECES_2D     5
 
 /* Le tableau des pièces de monnaie disponibles (initialisation à la déclaration) */
 int tab_monnaie[NB_PIECES] = { NB_PIECES_25C, NB_PIECES_1D, NB_PIECES_2D };
@@ -169,10 +169,13 @@ Description :	Fonction permettant de récolter l’argent nécessaire selon le
 				en cours et on quitte la boucle de saisie.  On retourne le total
 				accumulé.
 
-Paramètres :	prix:  Prix de l'item (réel). Un des 5 prix valides (voir les constantes)
-				tab_monnaie: Tableau d’entiers indiquant le nombre de pièces de monnaie disponibles.
+Paramètres :	prix:			Prix de l'item (réel). Un des 5 prix valides 
+								(voir les constantes)
+				tab_monnaie:	Tableau d’entiers indiquant le nombre de pièces 
+								de monnaie disponibles.
 
-Retour :		le montant total reçu (réel), si la commande est annulée ce montant sera < prix.
+Retour :		Le montant total reçu (réel), si la commande est annulée 
+				ce montant sera < prix.
 
 */
 /*===========================================================================*/
@@ -181,12 +184,17 @@ double recolter_argent(double prix_item);
 
 /*===========================================================================*/
 /*
-fonction :		recolter_argent()
-Description :
+fonction :		Fonction permettant de redonner la monnaie nécessaire pour 
+				combler un « montant » reçu. On utilise ici l’algorithme 
+				classique de distribution de monnaie.
 
 
-Paramètres :
-Retour :
+
+Paramètres :	montant:		Le montant de monnaie à rembourser (réel).
+				tab_monnaie:	Tableau d’entiers indiquant le nombre de pièces 
+								de monnaie disponibles.
+
+Retour :		1 si la monnaie a été redonnée, 0 sinon (pas assez de pièces dans la machine).
 */
 /*===========================================================================*/
 int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]);
@@ -195,11 +203,29 @@ int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]);
 /*===========================================================================*/
 /*
 fonction :		gerer_monnaie()
-Description :
+Description :	Fonction gérant la logique pour la gestion de l’argent et la 
+				monnaie. Reçoit une position-item et un prix. On imprime ces 
+				deux valeurs à l’écran. On appelle « recolter_argent() » et si 
+				cette fonction retourne un montant insuffisant, on considère 
+				que l’achat a été annulée et on rembourse l'utilisateur (en 
+				affichant un message d’annulation). Si le montant retourné 
+				par « recolter_argent() » est suffisant, on considère l’achat 
+				comme complet pour l’instant.  Si le montant retourné est plus 
+				grand que le prix de l’item on tente de redonner la monnaie de 
+				cette différence.  Si la fonction de distribution de monnaie a 
+				échoué (manque de monnaie), on considère l’achat comme annulé 
+				et on redonne le montant du prix au complet en monnaie à 
+				l’utilisateur (en affichant un message de remboursement et un 
+				message demandant de payer avec la monnaie exacte). Si l’achat 
+				est complet la fonction retourne 1 et si l’achat a été annulé, 0.
 
+Paramètres :	item:			Position-tableau de l'item (entre 0 et NB_ITEMS-1)
+				prix:			Prix de l'item à payer (un des 5 prix valides, 
+								voir les constantes)
+				tab_monnaie:	Tableau d’entiers indiquant le nombre de pièces 
+								de monnaie disponibles.
 
-Paramètres :
-Retour :
+Retour: 1 si l’achat s'est effectué avec succès, 0 sinon.
 */
 /*===========================================================================*/
 int gerer_monnaie(int item, double prix, int tab_monnaie);
@@ -332,84 +358,119 @@ void afficher_inventaire(int tab_inventaire[], unsigned int nb_items) {
 };
 
 double recolter_argent(double prix_item) {
-	double cumul_argent = 0;
-	int commande =0;
-	double piece = 0;
+	double cumul_argent = 0;  // Variable accumulant l'argent inséré
+	int commande = 0;         // Variable stockant le code de la commande utilisateur
+	double piece = 0;         // Montant correspondant à la pièce insérée
+
+	// Boucle jusqu'à ce que l'utilisateur valide la commande ou que l'argent inséré soit suffisant
 	while ((commande != CODE_BOUTON_COMMANDE) && (cumul_argent < prix_item)) {
-		commande = donner_code(valider_commande());
+		commande = donner_code(valider_commande());  // Obtient le code de la commande ou de la pièce insérée
+
+		// Vérification du type de pièce/billet inséré
 		switch (commande) {
-		case CODE_CAPTEUR_PIECE_25C: case CODE_CAPTEUR_PIECE_1D: case CODE_CAPTEUR_PIECE_2D:
-			piece = VAL_PIECES[commande-CODE_CAPTEUR_PIECE_25C];
+		case CODE_CAPTEUR_PIECE_25C:
+		case CODE_CAPTEUR_PIECE_1D:
+		case CODE_CAPTEUR_PIECE_2D:
+			// Calcule la valeur de la pièce en fonction du code reçu
+			piece = VAL_PIECES[commande - CODE_CAPTEUR_PIECE_25C];
 			break;
 		case CODE_CAPTEUR_BILLET_5D:
+			// Détecte un billet de 5$
 			piece = BILLET_5D;
 			break;
 		}
 
-		cumul_argent += piece;
+		cumul_argent += piece;  // Ajoute la valeur de la pièce au montant total accumulé
 	}
-	return cumul_argent;
+
+	return cumul_argent;  // Retourne le montant total collecté
 }
 
 int redonner_monnaie(double montant_a_retourner, int tab_monnaie[]) {
-	int tab_nb_pieces[NB_PIECES] = { 0 };
-	int pos_piece = NB_PIECES - 1;
-	double montant = montant_a_retourner;
-	int nb_pieces = 0;
+	int tab_nb_pieces[NB_PIECES] = { 0 };  // Tableau pour stocker le nombre de pièces à rendre
+	int pos_piece = NB_PIECES - 1;       // Position actuelle dans le tableau de pièces (part du plus grand)
+	double montant = montant_a_retourner; // Copie du montant à rendre pour modification
+	int nb_pieces = 0;                   // Nombre de pièces utilisées pour une dénomination donnée
 
-	while (pos_piece >= 0 && montant > 0) {
-		nb_pieces = montant / VAL_PIECES[pos_piece];
 
-		nb_pieces = (nb_pieces > tab_monnaie[pos_piece]) ? tab_monnaie[pos_piece] : nb_pieces;
-		
-		if (nb_pieces > 0) {
-			tab_nb_pieces[pos_piece] = nb_pieces;
-			tab_monnaie[pos_piece] -= nb_pieces;
-			montant -= nb_pieces * VAL_PIECES[pos_piece];
-		}
-		pos_piece--;
-	}
+	// Boucle pour distribuer la monnaie en utilisant les plus grandes pièces disponibles
+    while (pos_piece >= 0 && montant > 0) {
+        nb_pieces = montant / VAL_PIECES[pos_piece];  // Calcule le nombre de pièces nécessaires
+
+        // Vérifie si on a assez de pièces disponibles, sinon prend le maximum possible
+        nb_pieces = (nb_pieces > tab_monnaie[pos_piece]) ? tab_monnaie[pos_piece] : nb_pieces;
+
+        if (nb_pieces > 0) {
+            tab_nb_pieces[pos_piece] = nb_pieces;  // Stocke le nombre de pièces utilisées
+            tab_monnaie[pos_piece] -= nb_pieces;  // Met à jour le stock de pièces
+            montant -= nb_pieces * VAL_PIECES[pos_piece];  // Réduit le montant restant à rendre
+        }
+        pos_piece--;  // Passe à la plus petite dénomination suivante
+    }
+	// Vérifie si le montant à rendre a été totalement couvert
 	if (montant > 0) {
+		// Si on ne peut pas rendre le montant exact, on remet les pièces utilisées
 		for (int i = 0; i <= NB_PIECES; i++) {
-			tab_monnaie[i] += tab_nb_pieces[i];
-			tab_nb_pieces[i] = 0;
+			tab_monnaie[i] += tab_nb_pieces[i];  // Restaure le stock initial
+			tab_nb_pieces[i] = 0;  // Réinitialise le tableau des pièces utilisées
 		}
-		
-		return 0; //Pas assez de monaie dans la machine
+		return 0; // Échec : pas assez de monnaie disponible
 	}
 	else {
-		for (int i = (NB_PIECES-1); i >= 0; i--) {
+		// Affichage du nombre de pièces utilisées pour rendre la monnaie
+		for (int i = (NB_PIECES - 1); i >= 0; i--) {
 			printf("nb de %0.2f : %d\r\n", VAL_PIECES[i], tab_nb_pieces[i]);
 		}
-		return 1; //Monnaie redonnée adéquatement
+		return 1; // Succès : monnaie redonnée correctement
 	}
 }
 
-int gerer_monnaie(int item, double prix, int tab_monnaie) {
+int gerer_monnaie(int item, double prix, int tab_monnaie[]) {
 	double montant_recu = recolter_argent(prix);
 	double retour = 0;
+	//Impression de l'entête
+	printf("-------------------------\n");
+	printf("Vous voulez l'item : %i\n", item);
+	printf("Veuillez insérer: %d$ SVP\n", prix);
+	printf("-------------------------\n");
+
+	//Gestion de l'annulation de la commande s'il n'y a pas assez d'argent ou si
+	//on annule volontairement la transaction
 	if (montant_recu < prix) {
 		printf("Total: %0.2f$ / %0.2f$\r\n", montant_recu, prix);
 		printf("Commande annulée\r\n");
 		retour = montant_recu;
 		printf("Re-voici votre argent :\r\n");
-		redonner_monnaie(retour, &tab_monnaie);
+		redonner_monnaie(retour, tab_monnaie);
 		return 0;
 	}
-	else if (montant_recu >= prix) {
+	//Gestion du retour de l'argent après une transaction réussie
+	else {
 		retour = montant_recu - prix;
 		printf("Re-voici votre argent :\r\n");
-		redonner_monnaie(retour, &tab_monnaie);
-		return 1;
+		//Si l'achat réussi, mais qu'on ne peut pas redonner la monnaie, on annule 
+		//la transaction
+		if (!redonner_monnaie(retour, tab_monnaie)) {
+			printf("Impossible de rendre la monnaie exacte. Commande annulée.\r\n");
+			printf("Re-voici votre argent :\r\n");
+			redonner_monnaie(montant_recu, tab_monnaie);
+			return 0;
+		}
+		//Si l'achat réussi et qu'on peut redonner la monnaie, on finalise
+		//la transaction
+		else {
+			printf("Achat complet.\r\n");
+			return 1;
+		}
 	}
-	
 }
+
 
 #if RUN_MODE
 
 void main(void) {
 
-	recolter_argent(3);
+	//recolter_argent(3);
 	gerer_monnaie(5, 3, &tab_monnaie);
 }
 #endif
