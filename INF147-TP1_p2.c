@@ -39,6 +39,12 @@ informations destinées à l'utilisateur.
 // Macro convertissant le code utilisateur (lettre-chiffre) en index d'item.
 #define NO_ITEM(lettre, chiffre) ((lettre - 'A') * NB_COLONNES + (chiffre - '0'))
 
+// Macro permettant d'obtenir la lettre du code position (ex AX) en fonction de l'index lineaire (0 a NB_ITEMS - 1)
+#define POSITION_A_LETTRE(position) ('A' + position / NB_COLONNES)
+
+// Macro permettant d'obtenir le chiffre du code position (ex X1) en fonction de l'index lineaire (0 a NB_ITEMS - 1)
+#define POSITION_A_CHIFFRE(position) ('0' + position % NB_COLONNES)
+
 /* Les 5 codes-capteur pour la gestion du capteur */
 #define CODE_QUITTER                 0
 #define CODE_BOUTON_COMMANDE         1
@@ -229,7 +235,49 @@ Retour: 1 si l’achat s'est effectué avec succès, 0 sinon.
 */
 /*===========================================================================*/
 int gerer_monnaie(int item, double prix, int tab_monnaie);
+
+
 /*===========================================================================*/
+/*
+fonction :		gerer_commande()
+Description :	
+
+
+Paramètres :	
+
+Retour: rien
+*/
+/*===========================================================================*/
+void gerer_commande(int tab_inventaire[], double tab_prix[], int nb_items, int tab_monnaie[]);
+
+
+/*===========================================================================*/
+/*
+fonction :		afficher_machine()
+Description :	Fonction permettant d'afficher l'inventaire et les prix des items 
+				sous forme visuelle. Affiche un tableau de « nb_ran » par 
+				« nb_col » et montre les informations suivantes : No. item 
+				(de "A0" à "F5" pour un modèle 6x6), la quantité disponible 
+				ainsi que le prix. NOTE : Si la quantité disponible d’un item 
+				est 0, on affiche "vide". S’il y a un seul item de disponible 
+				on affiche « 1 item », mais il y en a plusieurs c’est « X items »
+
+
+Paramètres :	tab_inventaire: Tableau d’entiers des quantités des items.
+				tab_prix:       Tableau de réels des prix des items.
+				nb_ran:         Le nombre de rangées de la machine (entier).
+				nb_col:         Le nombre de colonnes de la machine (entier).
+
+
+Retour: rien
+*/
+/*===========================================================================*/
+void afficher_machine(int tab_inventaire[], double tab_prix[], unsigned int nb_ran, unsigned int nb_col);
+
+
+
+/*===========================================================================*/
+
 
 /*===========================================================================*/
 /*Implémentation des fonctions privées*/
@@ -465,6 +513,77 @@ int gerer_monnaie(int item, double prix, int tab_monnaie[]) {
 	}
 }
 
+void gerer_commande(int tab_inventaire[], double tab_prix[], int nb_items, int tab_monnaie[]) {
+
+	int position_item = demander_item(nb_items);
+
+	if (tab_inventaire[position_item] <= 0) {
+		printf("L’item [%c%c] n’est plus disponible", POSITION_A_LETTRE(position_item), POSITION_A_CHIFFRE(position_item));
+	}
+	else if (gerer_monnaie(position_item, tab_prix[position_item], tab_monnaie)) {
+		tab_inventaire[position_item] -= 1;
+	}
+
+
+}
+
+void afficher_machine(int tab_inventaire[], double tab_prix[], unsigned int nb_ran, unsigned int nb_col) {
+	printf("\r\n");
+	char string[15];
+	int position = 0;
+
+	for (int rang = 0; rang < nb_ran; rang++) {
+		for (int ligne = 0; ligne < 4; ligne++) {
+			for (int col = 0; col < nb_col; col++) {
+				position = (rang * nb_col) + col;
+				switch (ligne) {
+				case 0:
+					sprintf(string, "---------");
+					break;
+				case 1:
+					sprintf(string, "|   %c%c   ", POSITION_A_LETTRE(position), POSITION_A_CHIFFRE(position));
+					break;
+				case 2:
+					if (tab_inventaire[position] <= 0) {
+						strcpy(string, "|  vide  ");
+					}
+					else if (tab_inventaire[position] == 1) {
+						strcpy(string, "| 1 item ");
+					}
+					else if (tab_inventaire[position] < 10 && tab_inventaire[position] > 1) {
+						sprintf(string, "| %d items", tab_inventaire[position]);
+					}
+					else if (tab_inventaire[position] >= 10) {
+						sprintf(string, "|%d items", tab_inventaire[position]);
+					};
+					break;
+				case 3:
+					sprintf(string, "| %.2f$  ", tab_prix[position]);
+					break;
+				default:
+					strcpy(string, "| erreur ");
+					break;
+
+				}
+
+				if (col == nb_col - 1 && ligne != 0) {
+					printf("%s|", string);
+				}
+				else {
+					printf("%s", string);
+				}
+
+			}
+			printf("\n");
+
+		}
+	}
+	for (int col = 0; col < nb_col; col++) {
+		printf("---------");
+	}
+
+	printf("\r\n");
+}
 
 #if RUN_MODE
 
