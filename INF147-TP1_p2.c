@@ -382,7 +382,8 @@ void main(void)
 		if (total_monnaie(tab_monnaie, NB_PIECES) < 5)							// Si le total de la valeur de la monnaie est inferieur a 5$,
 																			    // on demande de payer en monnaie exacte
 		{
-			printf("Veuillez payer monnaie exacte\r\n");
+			printf("*****Veuillez payer avec la monnaie exacte*****\r\n\r\n");
+			Sleep(1000);  // Délai d'une seconde
 		}
 
 		// On demande a l'utilisateur d'entree une commande tant qu'il n'appuie pas sur 1
@@ -428,7 +429,8 @@ int valider_commande(void)
 		printf("0- Quitter\r\n");
 		printf(">> ");
 		scanf("%i", &commande);
-		// printf("\r\n");
+		printf("\r\n");
+		Sleep(1000);  // Délai d'une seconde
 		FFLUSH();
 	}
 	// Lorsque commande prends une valeur valide, on sort de la boucle while()
@@ -482,6 +484,7 @@ int demander_item(int nb_items)
 	{
 		printf("Entrez le code de l'item:");
 		scanf("%c%c", &lettre, &chiffre);
+		Sleep(1000);  // Délai d'une seconde
 		printf("\r\n");
 		lettre = toupper(lettre);
 		FFLUSH();
@@ -554,7 +557,9 @@ void afficher_inventaire(int tab_inventaire[], int tab_monnaie[], int nb_items)
 	{
 		printf(" %i x %0.2f$ ", tab_monnaie[i], VAL_PIECES[i]);
 	}
-	printf("\r\n");
+	printf("\r\n\r\n");
+	Sleep(1000);  // Délai d'une seconde
+
 };
 
 double recolter_argent(double prix_item, int tab_monnaie[])
@@ -591,6 +596,9 @@ double recolter_argent(double prix_item, int tab_monnaie[])
 		cumul_argent += piece; // Ajoute la valeur de la piece au montant total accumule
 
 		printf("\r\nTotal: %.2f$/%.2f$\r\n", cumul_argent, prix_item); // On affiche le montant cumule en cours
+		Sleep(1000);  // Délai d'une seconde
+		printf("\r\n");
+
 	}
 
 	return cumul_argent; // Retourne le montant total collecte
@@ -667,7 +675,7 @@ int gerer_monnaie(int item, double prix, int tab_monnaie[])
 	else
 	{
 		retour = montant_recu - prix;
-		printf("Re-voici votre argent :\r\n");
+		
 		// Si l'achat reussi, mais qu'on ne peut pas redonner la monnaie, on annule
 		// la transaction
 		if (!redonner_monnaie(retour, tab_monnaie))
@@ -681,6 +689,7 @@ int gerer_monnaie(int item, double prix, int tab_monnaie[])
 		// la transaction
 		else
 		{
+			printf("Re-voici votre argent :\r\n");
 			printf("Achat complet.\r\n");
 			return 1;
 		}
@@ -789,4 +798,6 @@ void afficher_machine(int tab_inventaire[], double tab_prix[], int nb_ran, int n
 	}
 
 	printf("\r\n"); // Saut de ligne final
+	Sleep(1000);  // Délai d'une seconde
+
 }
