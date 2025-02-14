@@ -8,9 +8,9 @@
  Créé le    : 24 janvier 2025
 
 Description :
-Ce fichier contient la fonction main(), ainsi que lesfonctions nécessaires
-au fonctionnement d'une machine distributrice. On y retrouve la gestion des
-paiements, de l'inventaire et des prix des articles, ainsi que la prise de
+Ce fichier contient la fonction main(), ainsi que lesfonctions nécessaires 
+au fonctionnement d'une machine distributrice. On y retrouve la gestion des 
+paiements, de l'inventaire et des prix des articles, ainsi que la prise de 
 commandes utilisateur. Certaines fonctions gèrent également l'affichage des
 informations destinées à l'utilisateur.
 
@@ -26,8 +26,7 @@ informations destinées à l'utilisateur.
 #include <math.h>
 #include <time.h>
 
-#define TEST_MODE 0 //1 = test mode on, 0 = test mode off
-#define RUN_MODE 1  //1 = run mode on, 0 = run mode off
+#define TEST_MODE 1 //1 = test mode on, 0 = test mode off
 // Macro pour vider le buffer du terminal après l'utilisation de `scanf`.
 #define FFLUSH() while (getchar() != '\n') {}
 
@@ -47,20 +46,6 @@ informations destinées à l'utilisateur.
 #define CODE_CAPTEUR_PIECE_2D       12
 #define CODE_CAPTEUR_BILLET_5D      13
 #define CHOIX_MAX                    5   //nb. maximal du choix-menu
-
-/* Constante-tableau des valeurs des 3 pièces de monnaie */
-#define NB_PIECES   3
-const double VAL_PIECES[NB_PIECES] = { 0.25, 1.00, 2.00 };
-#define BILLET_5D   5.00   //billets de 5 dollars
-
-// Les quantités de pièces de monnaie en inventaire (réduire ces valeurs pour vos tests)
-#define NB_PIECES_25C    40
-#define NB_PIECES_1D     20
-#define NB_PIECES_2D     20
-
-/* Le tableau des pièces de monnaie disponibles (initialisation à la déclaration) */
-int tab_monnaie[NB_PIECES] = { NB_PIECES_25C, NB_PIECES_1D, NB_PIECES_2D };
-
 
 /* Constante-tableau des 5 prix possibles pour un item */
 #define NB_PRIX     5
@@ -163,9 +148,9 @@ void afficher_inventaire(int tab_inventaire[], unsigned int nb_items);
 
 //On demande d'entrer une valeur tant que la valeur est invalide
 unsigned int valider_commande(void) {
-	int commande = CHOIX_MAX + 1; //On initialise commande à une valeur invalide
+	int commande = CHOIX_MAX+1; //On initialise commande à une valeur invalide
 	//Tant que commande ne prends pas une valeur valide, on redemande l'entrée
-	while (commande < 0 || commande > CHOIX_MAX) {
+	while(commande < 0 || commande > CHOIX_MAX) {
 		printf("Quel capteur voulez-vous simuler?\r\n");
 		printf("1- Choisir un item\r\n");
 		printf("2- 0.25$\r\n");
@@ -177,7 +162,7 @@ unsigned int valider_commande(void) {
 		scanf("%i", &commande);
 		//printf("\r\n");
 		FFLUSH();
-	}
+	}		
 	//Lorsque commande prends une valeur valide, on sort de la boucle while()
 	//et on retourne cette valeur
 	return commande;
@@ -192,45 +177,45 @@ unsigned int donner_code(unsigned int commande) {
 
 	case 2:
 		return CODE_CAPTEUR_PIECE_25C;
-
+		
 	case 3:
 		return CODE_CAPTEUR_PIECE_1D;
-
+		
 	case 4:
 		return CODE_CAPTEUR_PIECE_2D;
-
+		
 	case 5:
 		return CODE_CAPTEUR_BILLET_5D;
-
+		
 	case 0:
 		return CODE_QUITTER;
-		//Si un problème se produit et que commande prend une valeur invalide, on
-		//on retourne une autre valeur invalide
+	//Si un problème se produit et que commande prend une valeur invalide, on
+	//on retourne une autre valeur invalide
 	default:  return -1;
 	}
 };
 
 //On demande quel item l'utilisateur désire tant qu'il est invalide
 unsigned int demander_item(unsigned int nb_items) {
-	char lettre = '0'; //on initialise à une valeur invalide
-	char chiffre = '0';
+	char lettre      = '0'; //on initialise à une valeur invalide
+	char chiffre     = '0';
 	//Avec le nombre de colonnes et d'items, on trouve le nombre de chiffres possibles
 	char nb_chiffres = (nb_items - 1) % NB_COLONNES;
 	//Avec le nombre de colonnes et d'items, on trouve le nombre de lettres possibles
-	char nb_lettres = (nb_items - 1) / NB_COLONNES;
-
+	char nb_lettres  = (nb_items - 1) / NB_COLONNES;
+	
 	//Tant que le code entré est invalide, on le redemande
-	while ((lettre < 'A') || (lettre > 'A' + nb_lettres) ||
-		(chiffre < '0') || chiffre > '0' + nb_chiffres) {
+	while((lettre < 'A') || (lettre > 'A' + nb_lettres) || 
+		  (chiffre < '0') || chiffre > '0' + nb_chiffres) {
 		printf("Entrez le code de l'item:");
 		scanf("%c%c", &lettre, &chiffre);
 		printf("\r\n");
 		lettre = toupper(lettre);
 		FFLUSH();
-
+		
 		//Si la valeur entrée est invalide, on l'indique
-		if ((lettre < 'A') || (lettre > 'A' + nb_lettres) ||
-			(chiffre < '0') || chiffre > '0' + nb_chiffres) {
+		if((lettre < 'A') || (lettre > 'A' + nb_lettres) || 
+		   (chiffre < '0') || chiffre > '0' + nb_chiffres){
 			printf("Item invalide \r\n");
 		}
 	}
@@ -244,7 +229,7 @@ void init_prix(double tab_prix[], unsigned int nb_items) {
 	//on parcourt le tableau de prix pour le remplir
 	for (int i = 0; i < nb_items; i++) {
 		//On trouve un entier aléatoire qu'on ramène de 0 à NB_PRIX
-		indice_prix = rand() % NB_PRIX;
+		indice_prix = rand() % NB_PRIX; 
 		tab_prix[i] = LISTE_PRIX[indice_prix];
 	}
 };
@@ -255,7 +240,7 @@ void init_inventaire(int tab_inventaire[], unsigned int nb_items) {
 	//On parcourt le tableau d'inventaire pour le remplir
 	for (int i = 0; i < nb_items; i++) {
 		//On trouve un entier aléatoire qu'on ramène de 0 à INVENTAIRE_MAX
-		nb_inventaire = rand() % (INVENTAIRE_MAX + 1);
+		nb_inventaire = rand() % (INVENTAIRE_MAX+1);
 		//On attribue une valeur de 0 à INVENTAIRE_MAX à un item dans 
 		// l'inventaire
 		tab_inventaire[i] = nb_inventaire;
@@ -285,27 +270,11 @@ void afficher_inventaire(int tab_inventaire[], unsigned int nb_items) {
 /*===========================================================================*/
 
 
-#if RUN_MODE
-
-void main(void) {
-	;
-}
-#endif
-
-
-
-
-
-
-
-
-
-
 #if TEST_MODE
 /*===========================================================================*/
 /*Fonction principale de test qui appelle l'execution des autres fonctions*/
 /*===========================================================================*/
-void main(void) {
+void main(void){
 	srand(time(NULL));
 	int commande = -1;				//Commande utilisateur
 	int code;						//Code correspondant à la commande utilisateur
@@ -338,7 +307,7 @@ void main(void) {
 	lettre_item = 'A' + (no_item / NB_COLONNES);
 	chiffre_item = '0' + (no_item % NB_COLONNES);
 	printf("Item no. %i: code[%c%c], inventaire = %i, prix = %0.2f", no_item,
-		lettre_item, chiffre_item, tab_inventaire[no_item], tab_prix[no_item]);
+		lettre_item,chiffre_item, tab_inventaire[no_item], tab_prix[no_item]);
 
 	return EXIT_SUCCESS;
 }
