@@ -26,8 +26,13 @@ int main(void)
 	int cout = 0;	// Coût de l'état actuel de la plaque
 	int changement; // Indicateur de changement après un déplacement
 
+	srand(time(NULL));
+
+
 	// Copie de la solution dans plaque_test comme plaque de depart
 	memcpy(plaque_test, SOLUTION, sizeof(t_plaque));
+	py0 = DIM - 1;
+	px0 = 
 
 	printf("Plaque solution\r\n");
 	afficher_plaque(plaque_test);
@@ -37,6 +42,7 @@ int main(void)
 
 	printf("Plaque melangee\r\n");
 	afficher_plaque(plaque_test);
+	printf("Cout: %d\r\n", evaluer_plaque(plaque_test));
 
 	// Boucle infinie pour la gestion des déplacements de l'utilisateur
 	while (1)

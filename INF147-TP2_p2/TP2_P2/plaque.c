@@ -21,7 +21,7 @@ static void print_tableau_limite(int dim);
 /*===========================================================================*/
 /* Définition des fonctions publiques */
 /*===========================================================================*/
-void trouver_numero(const t_plaque pla, int num, int *posy, int *posx)
+void trouver_numero(const t_plaque pla, int num, int* posy, int* posx)
 {
 	// Boucle qui parcourt la plaque à l'horizontale (i), puis à la vertical (j)
 	for (int indice_horiz = 0; indice_horiz < DIM; indice_horiz++)
@@ -33,15 +33,15 @@ void trouver_numero(const t_plaque pla, int num, int *posy, int *posx)
 			{
 				(*posx) = indice_horiz;
 				(*posy) = indice_vert;
+				return;
 			}
 		}
 	}
 }
 
 /*===========================================================================*/
-int changer_plaque(t_plaque pla, t_direction dir, int *py_0, int *px_0)
+int changer_plaque(t_plaque pla, t_direction dir, int* py_0, int* px_0)
 {
-	// int case_tempo;
 
 	// On analyse les cas qu'il est possible de recevoir
 	switch (dir)
@@ -118,17 +118,14 @@ int changer_plaque(t_plaque pla, t_direction dir, int *py_0, int *px_0)
 			return 1;
 		}
 		break;
-	default:
-		break;
 	}
 	return 0;
 }
 
 /*===========================================================================*/
-void melanger_plaque(t_plaque pla, int *py_0, int *px_0)
+void melanger_plaque(t_plaque pla, int* py_0, int* px_0)
 {
 	int deplacement_aleatoire = 0;
-	srand(time(NULL));
 	// Boucle qui parcourt la plaque à l'horizontale (i), puis à la vertical (j)
 	// pour mettre la solution dans le tableau pla
 	for (int indice_horiz = 0; indice_horiz < DIM; indice_horiz++)
@@ -139,10 +136,9 @@ void melanger_plaque(t_plaque pla, int *py_0, int *px_0)
 			pla[indice_vert][indice_horiz] = SOLUTION[indice_vert][indice_horiz];
 		}
 	}
-	trouver_numero(pla, VIDE, py_0, px_0);
 	for (int i = 0; i < NBCOUPS; i++)
 	{
-		deplacement_aleatoire = rand() % 3;
+		deplacement_aleatoire = rand() % 4;
 		changer_plaque(pla, deplacement_aleatoire, py_0, px_0);
 	}
 }
@@ -156,13 +152,21 @@ int evaluer_plaque(const t_plaque pla)
 	int pos_y_actuelle;
 	int cout_total = 0;
 	// Boucle qui évalue le coût total en fonction de la distance de chaque numéro par rapport à sa position correcte
-	for (int i = 1; i < DIM * DIM; i++)
+	for (int rangee = 0; rangee < DIM; rangee++)
 	{
-		trouver_numero(SOLUTION, i, &pos_y_attendue, &pos_x_attendue); // Distance attendue du numero
-		trouver_numero(pla, i, &pos_y_actuelle, &pos_x_actuelle);	   // Distance actuelle du numero
+		for (int colonne = 0; colonne < DIM; colonne++) {
+			pos_x_attendue = colonne; // Position attendue du numero en x
+			pos_y_attendue = rangee;  // Position attendue du numero en y
 
-		// Calcul du coût basé sur la distance de Manhattan
-		cout_total += abs(pos_x_actuelle - pos_x_attendue) + abs(pos_y_actuelle - pos_y_attendue);
+			// Positions actuelles du numero en x,y
+			if (pla[rangee][colonne]) {
+				trouver_numero(pla, SOLUTION[rangee][colonne], &pos_y_actuelle, &pos_x_actuelle);
+				// Calcul du coût basé sur la distance de Manhattan
+				cout_total += abs(pos_x_actuelle - pos_x_attendue) + abs(pos_y_actuelle - pos_y_attendue);
+			}
+
+
+		}
 	}
 
 	return cout_total;
@@ -205,6 +209,14 @@ void afficher_plaque(const t_plaque pla)
 	print_tableau_limite(DIM);
 }
 
+
+/*===========================================================================*/
+void copier_plaque(t_plaque plaque_origin, t_plaque plaque_destination) {
+	//On utilise memcpy pour copier la plaque d'origine dans la plaque 
+	//de destination
+	memcpy(plaque_destination, plaque_origin, sizeof(t_plaque));
+}
+
 /*===========================================================================*/
 /* Définition des fonctions privees */
 /*===========================================================================*/
@@ -218,3 +230,4 @@ static void print_tableau_limite(int dim)
 	}
 	printf("*\n");
 }
+

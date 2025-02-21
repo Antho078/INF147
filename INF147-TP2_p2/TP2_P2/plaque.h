@@ -104,3 +104,18 @@ int evaluer_plaque(const t_plaque pla);
 */
 /*===========================================================================*/
 void afficher_plaque(const t_plaque pla);
+
+
+/*===========================================================================*/
+/*
+   Fonction    : copier_plaque()
+   Description : copier une plaque originale dans une variable qui contiendra
+                 la plaque de destination
+
+   Paramètres  : - plaque_origin       : Plaque qui sera copiée dans une autre plaque
+                 - plaque_destination  : Plaque dans laquelle sera copié la plaque_origin
+
+   Retour      : - Aucun
+*/
+/*===========================================================================*/
+void copier_plaque(t_plaque plaque_origin, t_plaque plaque_destination);
