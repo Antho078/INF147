@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="plaque.c" />
     <ClCompile Include="TestMain_A.c" />
     <ClCompile Include="t_pile.c" />
   </ItemGroup>
